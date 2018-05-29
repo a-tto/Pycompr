@@ -9,7 +9,7 @@ def encode_RLE(data):
     while processPtr < len(data) - 1:   #-1する意味がよくわかってないけどこれでうまくいく
         code = data[processPtr]
         run,processPtr = getRunLength(data, processPtr, code )
-        encode_data += pack('B',code) + pack('B',run)
+        encode_data += pack('B', run) + pack('B',code)
 
     return encode_data
 
