@@ -141,6 +141,4 @@ if __name__ == '__main__':
     print(encode_data)
     decode_data = decode_srle(encode_data)
     print(decode_data)
-    #wfp = open('/Users/akyo/compress/out','wb')
-    #wfp.write(decode_data)
 
