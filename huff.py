@@ -16,12 +16,25 @@ class Node:
         return x.count - y.count
 
 class HuffTree:
-    def __init__(self,treesize):
+    def __init__(self, treesize, filename):
         self.treesize = treesize
         self.left = [0] * 2 * MAX_CODE_NUM
         self.right = [0] * 2 * MAX_CODE_NUM
         self.parent = [0] * 2 * MAX_CODE_NUM
         self.histgram = [0] * 2 * MAX_CODE_NUM
+
+        with open(filename, 'rb') as f:
+            self.makeHistgram(f)
+            self.makeHuffTree()
+
+
+    def makeHistgram(self, f):
+        for i in range(len(f)):
+            c = ord(f.read(1))
+            if c < 0 or c > MAX_CODE_NUM:
+                return -1
+            self.histgram[c] += 1
+
 
     def makeHuffTree(self):
         h = self.histgram
@@ -41,25 +54,30 @@ class HuffTree:
             else:
                 del h[d2]
 
-    def outputHuffEncode(self, value):
+    def encode(self, out_bit_f, in_f):
         code = []
         c = 0
-        nowNode = value
 
-        while True:
-            selectBranch = self.parent[nowNode] > 0
-            nextNode = abs(self.parent[nowNode])
-            if selectBranch:
-                code.append(0)
-            else:
-                code.append(1)
+        for i in range(len(in_f)):
+            value = ord(in_f.read(1))
+            nowNode = value
 
-            if nextNode == self.treesize - 1:
-                break
-            nowNode = nextNode
+            while True:
+                selectBranch = self.parent[nowNode] > 0
+                nextNode = abs(self.parent[nowNode])
+                if selectBranch:
+                    code.append(0)
+                else:
+                    code.append(1)
 
-        #index 0 から１ビット単位で出力するように呼び出し元で制御する
-        return code.reverse()
+                if nextNode == self.treesize - 1:
+                    break
+                nowNode = nextNode
+
+            code.reverse()
+
+            for bit in code:
+                out_bit_f.putbit(bit)
 
 
 
@@ -73,5 +91,7 @@ def getTwoMinIndex(histgram):
 
     return d1,d2
 
-
+if __name__ == '__main__':
+    tree = HuffTree(MAX_CODE_NUM, '/Users/akyo/compress/testfile')
+    tree.outputHuffEncode()
 
