@@ -12,25 +12,21 @@ class Node:
         self.left = left
         self.right = right
 
-    def __cmp__(x,y):
-        return x.count - y.count
-
 class HuffTree:
     def __init__(self, treesize, filename):
         self.treesize = treesize
         self.left = [0] * 2 * MAX_CODE_NUM
         self.right = [0] * 2 * MAX_CODE_NUM
         self.parent = [0] * 2 * MAX_CODE_NUM
-        self.histgram = [0] * 2 * MAX_CODE_NUM
-
+        self.histgram = []
         with open(filename, 'rb') as f:
             self.makeHistgram(f)
             self.makeHuffTree()
 
 
     def makeHistgram(self, f):
-        for i in range(len(f)):
-            c = ord(f.read(1))
+        data = f.read()
+        for c in data:
             if c < 0 or c > MAX_CODE_NUM:
                 return -1
             self.histgram[c] += 1
@@ -42,11 +38,12 @@ class HuffTree:
             if len(h) <= 1:
                 break
             d1, d2 = getTwoMinIndex(h)
+
             self.left[self.treesize] = d1
             self.right[self.treesize] = d2
             self.parent[d1] = self.treesize
             self.parent[d2] = -self.treesize
-            h[self.treesize] = h[d1] + h[d2]
+            h.append(h[d1] + h[d2])
             self.treesize += 1
             del h[d1]
             if d1 < d2:
@@ -54,7 +51,7 @@ class HuffTree:
             else:
                 del h[d2]
 
-    def encode(self, out_bit_f, in_f):
+    def outputEncode(self, out_bit_f, in_f):
         code = []
         c = 0
 
@@ -79,12 +76,31 @@ class HuffTree:
             for bit in code:
                 out_bit_f.putbit(bit)
 
+    def outputNode(self, node):
+        code = []
+        nowNode = ord(node)
+        while True:
+            selectBranch = self.parent[nowNode] > 0
+            nextNode = abs(self.parent[nowNode])
+            if selectBranch:
+                code.append(0)
+            else:
+                code.append(1)
+
+            if nextNode == self.treesize - 1:
+                break
+            nowNode = nextNode
+
+        code.reverse()
+
+        print(code)
+
 
 
 def getTwoMinIndex(histgram):
     m1 = min(histgram)
     d1 = histgram.index(m1)
-    histgram[d1] = MAX_CODE_NUM + 1
+    histgram[d1] = MAX_CODE_NUM*3 + 1
     m2 = min(histgram)
     d2 = histgram.index(m2)
     histgram[d1] = m1
@@ -93,5 +109,10 @@ def getTwoMinIndex(histgram):
 
 if __name__ == '__main__':
     tree = HuffTree(MAX_CODE_NUM, '/Users/akyo/compress/testfile')
-    tree.outputHuffEncode()
+
+    tree.outputNode('A')
+    tree.outputNode('B')
+    tree.outputNode('C')
+    tree.outputNode('D')
+
 
