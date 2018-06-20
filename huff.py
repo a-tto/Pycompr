@@ -1,16 +1,59 @@
 from bitio import *
-import queue
-import heapq
+import nodepq
 
 MAX_CODE_NUM = 256
 
 
 class Node:
-    def __init__(self, code, count=0, left=None, right=None):
+    def __init__(self, code, count=0, left=None, right=None, parent=None):
         self.code = code
         self.count = count
         self.left = left
         self.right = right
+        self.parent = parent
+
+class Tree:
+    def __init__(self):
+        self.histgram = {}
+        self.leaf = []
+        self.root = None
+
+    def makeHistgram(self, f):
+        data = f.read()
+        for c in data:
+            if c not in self.histgram.keys():
+                self.histgram[c] = 1
+            else:
+                self.histgram[c] += 1
+
+
+    def makeTree(self):
+        pq = nodepq.PriorityQueue
+        #histgramのNodeデータを全てキューにプッシュする
+        for k, v in self.histgram:
+            pq.push(Node(k, v))
+
+        while True:
+            x = pq.pop()
+            if x.left == None and x.right == None:
+                self.leaf.append(x)
+
+            if pq.empty():
+                break
+
+            y = pq.pop()
+            if y.left == None and y.right == None:
+                self.leaf.append(y)
+
+            node = Node(None, x.count+y.count, x, y, None)
+            x.parent = y.parent = node
+
+            pq.push(node)
+
+        self.root = x
+
+
+
 
 class HuffTree:
     def __init__(self, treesize, filename):
