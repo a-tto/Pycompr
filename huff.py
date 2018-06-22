@@ -1,3 +1,5 @@
+# -*- Coding: utf-8 -*-
+
 from bitio import *
 import nodepq
 
@@ -26,12 +28,11 @@ class Tree:
             else:
                 self.histgram[c] += 1
 
-
     def makeTree(self):
         pq = nodepq.PriorityQueue
         #histgramのNodeデータを全てキューにプッシュする
-        for k, v in self.histgram:
-            pq.push(Node(k, v))
+        for k in self.histgram.keys():
+            pq.push(Node(k, self.histgram[k]))
 
         while True:
             x = pq.pop()
@@ -151,11 +152,15 @@ def getTwoMinIndex(histgram):
     return d1,d2
 
 if __name__ == '__main__':
-    tree = HuffTree(MAX_CODE_NUM, '/Users/akyo/compress/testfile')
+    tree = Tree()
+    with open('/Users/akyo/compress/testfile', 'rb') as f:
+        tree.makeHistgram(f)
+    tree.makeTree()
 
-    tree.outputNode('A')
-    tree.outputNode('B')
-    tree.outputNode('C')
-    tree.outputNode('D')
+    print(tree.leaf)
+    #tree.outputNode('A')
+    #tree.outputNode('B')
+    #tree.outputNode('C')
+    #tree.outputNode('D')
 
 
