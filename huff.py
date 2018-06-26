@@ -8,6 +8,7 @@ MAX_CODE_NUM = 256
 
 class Node:
     def __init__(self, code, count=0, left=None, right=None, parent=None):
+        self.key = count
         self.code = code
         self.count = count
         self.left = left
@@ -29,8 +30,7 @@ class Tree:
                 self.histgram[c] += 1
 
     def makeTree(self):
-        pq = nodepq.PriorityQueue
-        #histgramのNodeデータを全てキューにプッシュする
+        pq = nodepq.PriorityQueue()
         for k in self.histgram.keys():
             pq.push(Node(k, self.histgram[k]))
 
@@ -157,7 +157,8 @@ if __name__ == '__main__':
         tree.makeHistgram(f)
     tree.makeTree()
 
-    print(tree.leaf)
+    for node in tree.leaf:
+        print(chr(node.code) + '->' + str(node.count))
     #tree.outputNode('A')
     #tree.outputNode('B')
     #tree.outputNode('C')
