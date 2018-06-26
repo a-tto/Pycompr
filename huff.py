@@ -158,7 +158,7 @@ if __name__ == '__main__':
     tree.makeTree()
 
     for node in tree.leaf:
-        print(chr(node.code) + '->' + str(node.count))
+        print('{} -> {}'.format(chr(node.code), node.count))
     #tree.outputNode('A')
     #tree.outputNode('B')
     #tree.outputNode('C')
